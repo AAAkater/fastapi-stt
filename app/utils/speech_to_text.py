@@ -2,13 +2,25 @@ from typing import BinaryIO
 
 from faster_whisper import WhisperModel
 
+from app.core.config import settings
 
-def transcribe_audio(model: WhisperModel, audio_file: BinaryIO, lang: str):
-    segments, info = model.transcribe(
-        audio_file,
-        language=lang,
-    )
 
-    text = "".join(segment.text for segment in segments)
+class SttModel:
+    def __init__(self, model_path: str):
+        self.model = WhisperModel(
+            model_path,
+            device=settings.device,
+        )
 
-    return text
+    def stt(self, audio_file: BinaryIO, lang: str):
+        segments, info = self.model.transcribe(
+            audio_file,
+            language=lang,
+        )
+
+        text = "".join(segment.text for segment in segments)
+
+        return text
+
+
+model = SttModel(settings.model_path)
